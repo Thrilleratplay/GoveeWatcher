@@ -15,14 +15,17 @@ Clone or download this repo.
   npm install
 ```
 
-### usage
+## usage
 In a terminal:
 ```shell
   node index.js
 ```
+It may take a few seconds before devices are discovered.
 
-TODO:
+
+## TODO:
   * Explain the decoding
   * determine battery percentage
   * better filtering of output
+     * Use Bluetooth LE GATT instead of continuously scanning
   * proofread and correct embarrassing spelling

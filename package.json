@@ -1,0 +1,19 @@
+{
+  "name": "node_watcher",
+  "version": "0.0.1",
+  "description": "Proof of concept bluetooth broadcast decoder from Govee H5075 Thermometer Hygrometer using bluez",
+  "main": "index.js",
+  "keywords": [],
+  "author": "Tom Hiller <thrilleratplay@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "node-cleanup": "^2.1.2",
+    "node-pty": "^0.9.0",
+    "strip-ansi": "^6.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.7.2",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.19.1"
+  }
+}

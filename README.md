@@ -26,6 +26,7 @@ It may take a few seconds before devices are discovered.
 ## TODO:
   * Explain the decoding
   * determine battery percentage
+  * determine how/if negative temeratures are transmitted
   * better filtering of output
      * Use Bluetooth LE GATT instead of continuously scanning
   * proofread and correct embarrassing spelling

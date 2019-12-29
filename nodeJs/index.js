@@ -16,11 +16,6 @@ const ransi = require('strip-ansi');
 
 const DEBUG = false;
 
-if (DEBUG) {
-  /* eslint-disable-next-line no-unused-vars */
-  const logStream = fs.createWriteStream('dataoutput.log', { flags: 'a' });
-}
-
 // ***************************************************************
 
 const DEGREE_CHAR = String.fromCharCode(176);
@@ -74,10 +69,14 @@ term.on('data', (rawData) => {
   let tempInC;
   let tempInF;
   let humidityPercentage;
+  let battery;
+  let batteryPercentage = '';
 
   let btMAC;
   let broadcastData;
   let tag;
+
+  let logStream;
 
   // Matches the boardcast regex
   if (broadcastMatch) {
@@ -102,13 +101,17 @@ term.on('data', (rawData) => {
       streamUpdate = data.split(' ').filter((x) => String(x).trim().length === 2);
 
       if (streamUpdate.length > 4) {
-        // The first octet is 00, the next four are encoded with
-        // the temperature in C and humidity Percentage.
-        // TODO: figure out the battery life percentage
+        // The first octet is 00, the next three are encoded with
+        // the temperature in C and humidity Percentage. The forth is the battery
         encodedData = parseInt(streamUpdate.slice(1, 4).join(''), 16);
+        battery = parseInt(streamUpdate.slice(4, 5).join(''), 16);
         tempInC = (encodedData / 10000).toPrecision(3);
         tempInF = ((tempInC * 1.8) + 32).toPrecision(3);
         humidityPercentage = ((encodedData % 1000) / 10).toPrecision(3);
+
+        if (battery) {
+          batteryPercentage = ` - Battery ${battery}%`;
+        }
 
         console.log([
           devices[btMAC] || 'Govee Thermohydrometer',
@@ -125,6 +128,7 @@ term.on('data', (rawData) => {
           'Humidity: ',
           humidityPercentage,
           '%',
+          batteryPercentage,
         ].join(''));
       }
     }
@@ -136,7 +140,13 @@ term.on('data', (rawData) => {
     console.log(data);
 
     /* eslint-disable-next-line no-undef */
-    logStream.write(sanitize(data) + os.EOL);
+    if (!logStream) {
+      /* eslint-disable-next-line no-unused-vars */
+      logStream = fs.createWriteStream('dataoutput.log', { flags: 'a' });
+      logStream.write(sanitize(data) + os.EOL);
+    } else {
+      logStream.write(sanitize(data) + os.EOL);
+    }
   }
 });
 

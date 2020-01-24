@@ -15,34 +15,36 @@ From the socket data provided by [python-bleason](https://github.com/TheCellule/
 #### Base
 | Octets | Value if static | Description |
 | :--- | :--- | :--- |
-| 1-7 |  | Header?
-| 8-13 |  `ZZ YY XX 38 c1 a4` | [MAC Address in reverse order.  Example a4:c1:38:XX:YY:ZZ](https://github.com/reelyactive/advlib#address)
-| 14 | `1f` | ?
-| 15 | `0d`| [Length of local name](https://github.com/reelyactive/advlib#local-name)
-| 16| `09` | [Complete Local Name](https://github.com/reelyactive/advlib#local-name)
-| 17-24 | `47 56 48 35 30 37 35 5f` | First part of device name "GVH5075_"
-| 25 -28 |  | Last four hex values (last two octets) of the MAC address spell out in ASCII.
+| 1-3 |  | Header?
+| 4 - 9 |  `ZZ YY XX 38 c1 a4` | [MAC Address in reverse order.  Example a4:c1:38:XX:YY:ZZ](https://github.com/reelyactive/advlib#address)
+| 10 | `1f` | ?
+| 11 | `0d`| [Length of local name](https://github.com/reelyactive/advlib#local-name)
+| 12| `09` | [Complete Local Name](https://github.com/reelyactive/advlib#local-name)
+| 13 - 20 | `47 56 48 35 30 37 35 5f` | First part of device name "GVH5075_"
+| 21 - 24 |  | Last four hex values (last two octets) of the MAC address spell out in ASCII.
 
 #### Example of temperature/humidity advertisement
 | Octets | Value if static | Description |
 | :--- | :--- | :--- |
-| 29 | `03` | Length of payload |
-| 30 | `03` | flag for "Complete List of 16-bit UUIDs"
-| 31 -32 | `88 ec` | Manufacturer Key
-| 33 -35 | `02 01 05` | GAP list of 32-bit UUIDs but it is empty(?)
-| 36 | | Length of payload.  For this instance it is `09`
-| 37 | `ff` | Manufacture data flag
-| 38 -39 | `88 ec` | Manufacturer Key
-| 41 | `00` | padding?
-| 42 - 44 |  | Encoded temperature and humidity
-| 45 | `00` | padding ?
+| 25 | `03` | Length of payload |
+| 26 | `03` | flag for "Complete List of 16-bit UUIDs"
+| 27 -28 | `88 ec` | Manufacturer Key
+| 29 -31 | `02 01 05` | GAP list of 32-bit UUIDs but it is empty(?)
+| 32 | | Length of payload.  For this instance it is `09`
+| 33 | `ff` | Manufacture data flag
+| 34 -35 | `88 ec` | Manufacturer Key
+| 36 | `00` | padding?
+| 37 - 39 |  | Encoded temperature and humidity
+| 40 |   | Battery remaining percentage
+| 41 | `00` | padding ?
 
 ### Decoding Data
 The three octets are concatenated together and parsed into an integer
 Example:
 `03 21 5d` -> `03215d` --parse integer--> `205149`
 
-Once we have this integer, for the temperature in Celsius , divide by 10000
+### For positive temperature values (above 0°C/32°F):
+Once we have this integer, for the temperature in Celsius, divide by 10000
 ```
 205149 / 10000 = 20.5149°C
 ```
@@ -51,6 +53,29 @@ Humidity is modulus 1000 divided by 10
 ```
 205149 % 1000 = 149
 149 / 10 = 14.9% humidity
+```
+
+### For negative temperature values (below 0°C/32°F):
+To check for a negative temperature, the same three octets will need to be converted to a binary string array.
+Example:
+`80 6a f9` -> `806af9` --parse binary string array--> `100000000110101011111001`
+
+If index 0 of the array is a `1`, the temperature is negative.  Flip this bit from a `1` to a `0` and parse into an integer
+
+`100000000110101011111001` --change bit--> `000000000110101011111001` --convert to integer--> `27385`
+
+Now it can be converted the same as a positive temperature value
+
+```
+27385 / 10000 = 2.7285
+
+Remember it is negative so the temperature is -2.7285°C
+```
+
+Humidity is modulus 1000 divided by 10
+```
+27385 % 1000 = 385
+385 / 10 = 38.5% humidity
 ```
 
 ### Received Signal Strength Indicator (RSSI)
@@ -64,7 +89,3 @@ This is only a proof of concept for decoding BLE advertisements and do not plan 
  * [Datasheet for Telink
 BLE SoC TLSR8253F512](DS_TLSR8253-E_Datasheet for Telink BLE SoC TLSR8253.pdf)
  * [FCC.io public device data](https://fccid.io/2AQA6-H5075)
-
-## TODO:
-  * determine battery percentage
-  * determine how/if negative temperatures are transmitted

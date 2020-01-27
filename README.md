@@ -55,29 +55,23 @@ Humidity is modulus 1000 divided by 10
 149 / 10 = 14.9% humidity
 ```
 
-### For negative temperature values (below 0°C/32°F):
-To check for a negative temperature, the same three octets will need to be converted to a binary string array.
-Example:
-`80 6a f9` -> `806af9` --parse binary string array--> `100000000110101011111001`
+### ~~For negative temperature values (below 0°C/32°F):~~
+This is not correct.  I am not sure if the sensor can accurately measure negative temperatures.
 
-If index 0 of the array is a `1`, the temperature is negative.  Flip this bit from a `1` to a `0` and parse into an integer
 
-`100000000110101011111001` --change bit--> `000000000110101011111001` --convert to integer--> `27385`
+~~To check for a negative temperature, the same three octets will need to be converted to a binary string array.
+Example:~~
 
-Now it can be converted the same as a positive temperature value
+~~`80 6a f9` -> `806af9` --parse binary string array--> `100000000110101011111001`~~
 
-```
-27385 / 10000 = 2.7285
+~~If index 0 of the array is a `1`, the temperature is negative.  Flip this bit from a `1` to a `0` and parse into an integer~~
 
-Remember it is negative so the temperature is -2.7285°C
-```
+~~`100000000110101011111001` --change bit--> `000000000110101011111001` --convert to integer--> `27385`~~
 
-Humidity is modulus 1000 divided by 10
-```
-27385 % 1000 = 385
-385 / 10 = 38.5% humidity
-```
+~~Now it can be converted the same as a positive temperature value~~
 
+
+~~
 ### Received Signal Strength Indicator (RSSI)
 There is a second advertisement signal contains the ManufacturerData Key `0x004c` and payload data `INTELLI_ROCKS`, (Govee is the brand name, the manufacture is "Shenzhen Intellirocks Tech. Co., Ltd.").  Based on the finding in [neilsheps/GoveeTemperatureAndHumidity](https://github.com/neilsheps/GoveeTemperatureAndHumidity), this relevant to the Apple iOS application.  This however provides the RSSI for the device.
 

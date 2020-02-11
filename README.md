@@ -1,4 +1,9 @@
 # Govee Watcher
+
+This is deprecated.  
+
+The work done here was continued as a [Home Assistant Component](https://github.com/Home-Is-Where-You-Hang-Your-Hack/sensor.goveetemp_bt_hci)
+
 Proof of concept Bluetooth broadcast decoder from Govee H5075 Thermometer Hygrometer
 
 Versions:

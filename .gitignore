@@ -1,3 +1,4 @@
 node_modules
 nodejs/node_modules
 nodeJs/dataoutput.log
+debugger/__pycache__

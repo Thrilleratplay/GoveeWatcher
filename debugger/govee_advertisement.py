@@ -1,4 +1,5 @@
 """Govee thermometer/hygrometer BLE advertisement parser."""
+from struct import unpack_from
 from typing import Optional
 import logging
 
@@ -112,16 +113,21 @@ class GoveeAdvertisement:
                 self.humidity = float((self.packet % 1000) / 10)
                 self.battery = int(self.mfg_data[7])
                 self.model = "Govee H5101/H5102"
-            elif self.check_is_gvh5074() or self.check_is_gvh5051():
-                mfg_data_5074 = hex_string(self.mfg_data[3:7]).replace(" ", "")
-                temp_lsb = mfg_data_5074[2:4] + mfg_data_5074[0:2]
-                hum_lsb = mfg_data_5074[6:8] + mfg_data_5074[4:6]
-                self.packet = temp_lsb + hum_lsb
-                self.humidity = float(int(hum_lsb, 16) / 100)
+            elif self.check_is_gvh5179():
+                temp, hum, batt = unpack_from("<HHB", self.mfg_data, 6)
+                self.packet = hex(temp)[2:] + hex(hum)[2:]
                 # Negative temperature stored an two's complement
-                temp_lsb_int = int(temp_lsb, 16)
-                self.temperature = float(twos_complement(temp_lsb_int) / 100)
-                self.battery = int(self.mfg_data[7])
+                self.temperature = float(twos_complement(temp) / 100.0)
+                self.humidity = float(hum / 100.0)
+                self.battery = int(batt)
+                self.model = "Govee H5179"
+            elif self.check_is_gvh5074() or self.check_is_gvh5051():
+                temp, hum, batt = unpack_from("<HHB", self.mfg_data, 3)
+                self.packet = hex(temp)[2:] + hex(hum)[2:]
+                # Negative temperature stored an two's complement
+                self.temperature = float(twos_complement(temp) / 100.0)
+                self.humidity = float(hum / 100.0)
+                self.battery = int(batt)
                 self.model = "Govee H5074/H5051"
         except (ValueError, IndexError):
             pass
@@ -141,6 +147,10 @@ class GoveeAdvertisement:
     def check_is_gvh5051(self) -> bool:
         """Check if mfg data is that of Govee H5051."""
         return self._mfg_data_check(11, 6)
+
+    def check_is_gvh5179(self) -> bool:
+        """Check if mfg data is that of Govee H5179."""
+        return self._mfg_data_check(11, 6) and self._mfg_data_id_check("0188")
 
     def _mfg_data_check(self, data_length: int, flags: int) -> bool:
         """Check if mfg data is of a certain length with the correct flag."""

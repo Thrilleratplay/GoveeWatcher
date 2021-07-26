@@ -90,8 +90,8 @@ def handle_meta_event(hci_packet) -> None:
 
 # ###########################################################################
 
-
-adapter = get_provider().get_adapter()
+# NOTE: 0 is hci0, replace with required hci device number
+adapter = get_provider().get_adapter(0)
 adapter._handle_meta_event = handle_meta_event
 
 try:

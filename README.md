@@ -2,15 +2,16 @@
 
 This is deprecated.  
 
-The work done here was continued as a [Home Assistant Component](https://github.com/Home-Is-Where-You-Hang-Your-Hack/sensor.goveetemp_bt_hci)
+The work done here was continued as a [Home Assistant Component](https://github.com/Home-Is-Where-You-Hang-Your-Hack/sensor.goveetemp_bt_hci) and [ble_monitor](https://github.com/custom-components/ble_monitor)
 
-Proof of concept Bluetooth broadcast decoder from Govee H5075 Thermometer Hygrometer
-
-Versions:
-* [NodeJS](./odeJS)
-* [Python 3](./python)
+#### Multiple Govee device Thermometer Hygrometer
 * [Python debugger](./debugger) - Display values from GoveeAdvertisement parser
  found in [Home Assistant Component](https://github.com/Home-Is-Where-You-Hang-Your-Hack/sensor.goveetemp_bt_hci), works with multiple Govee devices.
+
+
+#### Orinignal proof of concept Bluetooth broadcast decoder from Govee H5075 Thermometer Hygrometer Versions:
+* [NodeJS](./odeJS)
+* [Python 3](./python)
 
 
 ## How does it work

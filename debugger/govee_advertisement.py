@@ -99,8 +99,8 @@ class GoveeAdvertisement:
                 self.battery = int(self.mfg_data[6])
                 self.model = "Govee H5072/H5075"
             elif self.check_is_gvh5102():
-                mfg_data_5075: str = hex_string(self.mfg_data[4:7]).replace(" ", "")
-                self.packet = int(mfg_data_5075, 16)
+                mfg_data_5102: str = hex_string(self.mfg_data[4:7]).replace(" ", "")
+                self.packet = int(mfg_data_5102, 16)
                 self.temperature = decode_temps(self.packet)
                 self.humidity = float((self.packet % 1000) / 10)
                 self.battery = int(self.mfg_data[7])
@@ -118,7 +118,7 @@ class GoveeAdvertisement:
                 self.temperature = float(temp / 100.0)
                 self.humidity = float(hum / 100.0)
                 self.battery = int(batt)
-                self.model = "Govee H5074/H5051"
+                self.model = "Govee H5051/H5074"
         except (ValueError, IndexError):
             pass
 
